@@ -21,7 +21,7 @@ namespace Skolverket.Kontosynk
                 Environment.Exit(1);
             }
 
-            using (var handler = new MutualTlsHandler())
+            using (var handler = new FederatedTlsAuthenticationHandler())
             {
                 using (var store = new X509Store(StoreName.My, StoreLocation.CurrentUser))
                 {

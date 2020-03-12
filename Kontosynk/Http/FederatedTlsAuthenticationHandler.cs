@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Skolverket.Kontosynk
 {
-    public sealed class MutualTlsHandler : HttpClientHandler
+    public sealed class FederatedTlsAuthenticationHandler : HttpClientHandler
     {
         private static readonly HttpClient _client = new HttpClient();
 
@@ -17,12 +17,12 @@ namespace Skolverket.Kontosynk
         private TlsFederationMetadata _metadata;
         private readonly Uri _metadataUrl;
 
-        public MutualTlsHandler()
+        public FederatedTlsAuthenticationHandler()
             : this(new Uri("https://md.swefed.se/kontosynk/kontosynk-prod-1.jws"))
         {
         }
 
-        public MutualTlsHandler(Uri metadataUrl)
+        public FederatedTlsAuthenticationHandler(Uri metadataUrl)
         {
             _metadataUrl = metadataUrl;
             ServerCertificateCustomValidationCallback = OnValidateServerCertificate;
