@@ -11,6 +11,9 @@ namespace Skolverket.Kontosynk
         [JsonProperty("organization", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public string Organization { get; set; }
 
+        [JsonProperty("organization_id")]
+        public string OrganizationId { get; set; }
+
         [JsonProperty("issuers")]
         public TlsFederationIssuer[] Issuers { get; set; }
 

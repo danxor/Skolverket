@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Net.Security;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -36,15 +37,22 @@ namespace Skolverket.Kontosynk
         {
             EnsureMetadata();
 
-            var hash = serverCertificate.GetCertHash(HashAlgorithmName.SHA256);
-            var hashString = Convert.ToBase64String(hash);
-            var server = FindServerByPin(hashString);
+            var entity = FindEntityByCertificate(ref serverCertificate);
+            if (entity != null)
+            {
+                return true;
+            }
 
-            return true;
+            return false;
         }
 
-        private TlsFederationEntity FindServerByPin(string hashString)
+        private TlsFederationEntity FindEntityByCertificate(ref X509Certificate2 serverCertificate)
         {
+            // NOTE: If pins ever change to allow something other than SHA256 this should need to be changed
+            var hash = serverCertificate.GetCertHash(HashAlgorithmName.SHA256);
+            var hashString = Convert.ToBase64String(hash);
+
+            // TODO: Refactor to LINQ query
             foreach (var entity in _metadata.Entities)
             {
                 if (entity.Servers != null)
@@ -55,7 +63,14 @@ namespace Skolverket.Kontosynk
                         {
                             if (pin.Value.Equals(hashString))
                             {
-                                return entity;
+                                foreach (var issuer in entity.Issuers)
+                                {
+                                    var cert = new X509Certificate2(Encoding.ASCII.GetBytes(issuer.Certificate));
+                                    if (cert.Equals(serverCertificate))
+                                    {
+                                        return entity;
+                                    }
+                                }
                             }
                         }
                     }
@@ -75,7 +90,7 @@ namespace Skolverket.Kontosynk
                 {
                     var token = _client.GetStringAsync(_metadataUrl).GetAwaiter().GetResult();
                     _metadata = JwsHelper.Load(token);
-                    _cacheInvalidationTime = startTime;
+                    _cacheInvalidationTime = startTime.AddSeconds(3600.0);
                 }
             }
         }

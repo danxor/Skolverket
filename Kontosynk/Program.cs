@@ -18,7 +18,7 @@ namespace Skolverket.Kontosynk
             if (!File.Exists("Skolverket.jwk"))
             {
                 Console.WriteLine("Skolverket signing key does not exist");
-                Environment.Exit(2);
+                Environment.Exit(1);
             }
 
             using (var handler = new MutualTlsHandler())
@@ -36,13 +36,14 @@ namespace Skolverket.Kontosynk
                     else
                     {
                         Console.WriteLine("Failed to find certificate: {0}", ClientCertificateThumbprint);
-                        Environment.Exit(3);
+                        Environment.Exit(2);
                     }
                 }
 
                 using (var client = new HttpClient(handler))
                 {
-                    var response = await client.GetAsync("https://localhost:44379/");
+                    // Do all the work with the service
+                    var response = await client.GetAsync("https://www.google.se");
                 }
             }
         }
