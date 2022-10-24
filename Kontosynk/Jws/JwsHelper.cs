@@ -1,30 +1,25 @@
 ﻿using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json;
 using System;
 using System.IO;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Skolverket.Kontosynk
 {
     public static class JwsHelper
     {
-        public static TlsFederationMetadata Load(TextReader stream)
+        public static TlsFederationMetadata Load(Stream stream)
         {
-            var serializer = new JsonSerializer();
+            var body = JsonSerializer.Deserialize<JwsBody>(stream);
 
-            using (var reader = new JsonTextReader(stream))
-            {
-                var body = serializer.Deserialize<JwsBody>(reader);
-
-                return Validate(body);
-            }
+            return Validate(body);
         }
 
         public static TlsFederationMetadata Load(string content)
         {
-            var body = JsonConvert.DeserializeObject<JwsBody>(content);
-
+            var body = System.Text.Json.JsonSerializer.Deserialize<JwsBody>(content);
             return Validate(body);
         }
 
@@ -53,7 +48,7 @@ namespace Skolverket.Kontosynk
 
                     var content = Encoding.UTF8.GetString(Convert.FromBase64String(base64));
 
-                    return JsonConvert.DeserializeObject<TlsFederationMetadata>(content);
+                    return JsonSerializer.Deserialize<TlsFederationMetadata>(content);
                 }
                 else
                 {
@@ -66,19 +61,19 @@ namespace Skolverket.Kontosynk
 
         internal class JwsSignature
         {
-            [JsonProperty("signature")]
+            [JsonPropertyName("signature")]
             internal string Signature { get; set; }
 
-            [JsonProperty("protected")]
+            [JsonPropertyName("protected")]
             internal string Protected { get; set; }
         }
 
         internal class JwsBody
         {
-            [JsonProperty("payload")]
+            [JsonPropertyName("payload")]
             internal string Payload { get; set; }
 
-            [JsonProperty("signatures")]
+            [JsonPropertyName("signatures")]
             internal JwsSignature[] Signatures { get; set; }
         }
     }

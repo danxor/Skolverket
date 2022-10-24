@@ -1,15 +1,15 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
+using System.Text.Json.Serialization;
 
 namespace Skolverket.Kontosynk
 {
     // Based on https://github.com/kirei/tls-fed-auth/blob/master/tls-fed-metadata.yaml
     public sealed class TlsFederationPin
     {
-        [JsonProperty("name")]
+        [JsonPropertyName("name")]
         public string Name { get; set; }
 
-        [JsonProperty("value")]
+        [JsonPropertyName("value")]
         public string Value { get; set; }
     }
 }

@@ -1,27 +1,27 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
+using System.Text.Json.Serialization;
 
 namespace Skolverket.Kontosynk
 {
     // Based on https://github.com/kirei/tls-fed-auth/blob/master/tls-fed-metadata.yaml
     public sealed class TlsFederationEntity
     {
-        [JsonProperty("entity_id")]
+        [JsonPropertyName("entity_id")]
         public string EntityId { get; set; }
 
-        [JsonProperty("organization", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        [JsonPropertyName("organization")]
         public string Organization { get; set; }
 
-        [JsonProperty("organization_id")]
+        [JsonPropertyName("organization_id")]
         public string OrganizationId { get; set; }
 
-        [JsonProperty("issuers")]
+        [JsonPropertyName("issuers")]
         public TlsFederationIssuer[] Issuers { get; set; }
 
-        [JsonProperty("servers")]
+        [JsonPropertyName("servers")]
         public TlsFederationEndpoint[] Servers { get; set; }
 
-        [JsonProperty("clients")]
+        [JsonPropertyName("clients")]
         public TlsFederationEndpoint[] Clients { get; set; }
     }
 }
